@@ -13,4 +13,17 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
+
+    <!--Splash-->
+    <style name="Splash">
+        <!--전체 배경색-->
+        <item name="android:windowSplashScreenBackground">@color/yellow</item>
+        <!--가운데에 나오는 로고 아이콘 이미지-->
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <!--스플래시 표시 기간:ms-->
+        <item name="android:windowSplashScreenAnimationDuration">1000</item>
+        <!--로고 아이콘 뒤의 원 색깔-->
+        <item name="android:windowSplashScreenIconBackgroundColor">@color/green</item>
+    </style>
+
 </resources>
