@@ -1,5 +1,6 @@
 package com.example.blinkingnotification
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
@@ -9,6 +10,7 @@ import com.example.blinkingnotification.databinding.ActivityMainBinding
 
 private lateinit var binding: ActivityMainBinding
 
+// 메인 화면
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +39,9 @@ class MainActivity : AppCompatActivity() {
                 return true
             }
             R.id.ask -> {
+                // 문의하기 액티비티로 이동
+                val intent = Intent(this@MainActivity, AskActivity::class.java)
+                startActivity(intent)
                 return true
             }
         }
