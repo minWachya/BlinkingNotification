@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.blinkingnotification"
-        minSdk 31  // Splash 이용
+        minSdk 21  // Android 12 Splash 이용하려면 31이어야 함
         targetSdk 32
         versionCode 1
         versionName "1.0"
