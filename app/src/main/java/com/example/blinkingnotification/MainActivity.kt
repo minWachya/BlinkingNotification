@@ -21,6 +21,12 @@ class MainActivity : AppCompatActivity() {
         // 서브 메뉴 달기
         setSupportActionBar(binding.toolBar)
 
+        // + 버튼 누르면 '알림 설정 화면'으로 이동
+        binding.fab.setOnClickListener {
+            val intent = Intent(this@MainActivity, SetAlarmActivity::class.java)
+            startActivity(intent)
+        }
+
     }
 
 
