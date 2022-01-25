@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!--알림 설정 화면의 반복 시간 설정 스피너 배열-->
+    <!--알림 설정 화면: 반복 시간 설정 스피너 배열-->
     <string-array name="select_time_array">
         <item>1분</item>
         <item>5분</item>
@@ -10,5 +10,11 @@
         <item>40분</item>
         <item>50분</item>
         <item>1시간</item>
+    </string-array>
+
+    <!--알림 설정 화면: 알림 형식 설정 스피너 배열-->
+    <string-array name="select_mode_array">
+        <item>기본</item>
+        <item>이미지</item>
     </string-array>
 </resources>

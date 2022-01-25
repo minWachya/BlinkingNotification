@@ -107,7 +107,37 @@
         android:layout_marginEnd="20dp"
         app:layout_constraintTop_toBottomOf="@+id/view3" />
 
-
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:layout_marginStart="20dp"
+        android:text="4. 이미지 선택"
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/spinnerSelectMode"
+        tools:ignore="MissingConstraints" />
+    <View
+        android:id="@+id/view4"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:background="@color/sky_blue"
+        app:layout_constraintBottom_toBottomOf="@+id/textView4"
+        tools:layout_editor_absoluteX="20dp" />
+    <Button
+        android:id="@+id/btnSelectImage"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="이미지 선택하기"
+        android:background="@color/gray"
+        android:spinnerMode="dropdown"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintTop_toBottomOf="@+id/view4" />
 
 
     <Button
