@@ -4,4 +4,11 @@
     <!--배경-->
     <item android:drawable="@color/yellow" />
 
+    <!--로고-->
+    <item>
+        <bitmap
+            android:src="@drawable/ic_eyes"
+            android:gravity="center"/>
+    </item>
+
 </layer-list>
