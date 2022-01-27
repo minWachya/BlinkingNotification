@@ -18,6 +18,14 @@ class MainActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
+        // 초기 도움말 화면 보이기
+        val sharedPreference = getSharedPreferences("help", MODE_PRIVATE)
+        val isShow = sharedPreference.getBoolean("isShow", true)
+        if(isShow) {
+            val intent = Intent(this@MainActivity, HelpActivity::class.java)
+            startActivity(intent)
+        }
+
         // 서브 메뉴 달기
         setSupportActionBar(binding.toolBar)
 

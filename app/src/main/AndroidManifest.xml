@@ -30,6 +30,9 @@
         <activity
             android:name=".SetAlarmActivity"
             android:label="알림 설정 화면" />
+        <activity
+            android:name=".HelpActivity"
+            android:label="도움말 화면" />
     </application>
 
 </manifest>
