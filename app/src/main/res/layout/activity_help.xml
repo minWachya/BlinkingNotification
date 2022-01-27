@@ -9,7 +9,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/btnNeverSee"
+        app:layout_constraintBottom_toTopOf="@+id/btnSkip"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -30,10 +30,10 @@
     </FrameLayout>
 
     <Button
-        android:id="@+id/btnNeverSee"
+        android:id="@+id/btnSkip"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="다시 보지 않기"
+        android:text="넘어가기"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btnNextAndOK"
         app:layout_constraintStart_toStartOf="parent" />
@@ -45,6 +45,6 @@
         android:text="다음"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/btnNeverSee" />
+        app:layout_constraintStart_toEndOf="@+id/btnSkip" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

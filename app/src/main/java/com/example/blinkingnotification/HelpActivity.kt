@@ -1,5 +1,6 @@
 package com.example.blinkingnotification
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
@@ -62,26 +63,22 @@ class HelpActivity : AppCompatActivity() {
             when(pager.currentItem){
                 0 -> pager.currentItem = 1
                 1 -> pager.currentItem = 2
-                2 -> {
-                    // 다음에도 보이게 설정
-                    val sharedPreference = getSharedPreferences("help", MODE_PRIVATE)
-                    val editor = sharedPreference.edit()
-                    editor.putBoolean("isShow", true)
-                    editor.apply()
-                    finish()
-                }
+                2 -> binding.btnSkip.callOnClick()  // '넘어가기' 버튼 누른 것과 같은 동작(메인 화면으로 이동)
                 // 디폴트는 시작 페이지로
                 else -> pager.currentItem = 0
             }
         }
-        // '다시 보지 않기' 버튼 클릭
-        binding.btnNeverSee.setOnClickListener {
+        // '넘어가기' 버튼 클릭
+        binding.btnSkip.setOnClickListener {
             // 다음에는 안 보이게 설정
             val sharedPreference = getSharedPreferences("help", MODE_PRIVATE)
             val editor = sharedPreference.edit()
             editor.putBoolean("isShow", false)
             editor.apply()
-            finish()
+
+            // 메인 화면으로 이동
+            val intent = Intent(this@HelpActivity, MainActivity::class.java)
+            startActivity(intent)
             finish()
         }
 

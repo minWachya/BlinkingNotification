@@ -17,9 +17,21 @@ class SplashActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
-        // 메인 액티비티로 이동
-        val intent = Intent(this@SplashActivity, MainActivity::class.java)
-        startActivity(intent)
-        finish()
+
+        // 초기 도움말 화면 보이기
+        val sharedPreference = getSharedPreferences("help", MODE_PRIVATE)
+        val isShow = sharedPreference.getBoolean("isShow", true)
+        if(isShow) {
+            val intent = Intent(this@SplashActivity, HelpActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+        else {
+            // 메인 액티비티로 이동
+            val intent = Intent(this@SplashActivity, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+
     }
 }

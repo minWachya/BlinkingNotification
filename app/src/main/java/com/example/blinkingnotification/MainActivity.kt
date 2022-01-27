@@ -18,14 +18,6 @@ class MainActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
-        // 초기 도움말 화면 보이기
-        val sharedPreference = getSharedPreferences("help", MODE_PRIVATE)
-        val isShow = sharedPreference.getBoolean("isShow", true)
-        if(isShow) {
-            val intent = Intent(this@MainActivity, HelpActivity::class.java)
-            startActivity(intent)
-        }
-
         // 서브 메뉴 달기
         setSupportActionBar(binding.toolBar)
 
@@ -49,7 +41,10 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.help -> {
-                Toast.makeText(applicationContext, "도움!", Toast.LENGTH_SHORT).show()
+                // 도움말 액티비티로 이동
+                val intent = Intent(this@MainActivity, HelpActivity::class.java)
+                startActivity(intent)
+                finish()    // 도움말 엑티비티에서 메인 액티비티로 다시 이동하기 때문에 종료
                 return true
             }
             R.id.ask -> {
