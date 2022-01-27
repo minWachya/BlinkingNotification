@@ -12,6 +12,9 @@ private lateinit var binding: ActivityMainBinding
 
 // 메인 화면
 class MainActivity : AppCompatActivity() {
+    // 뒤로가기 연속 클릭 대기 시간
+    private var mBackWait : Long = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -55,6 +58,15 @@ class MainActivity : AppCompatActivity() {
             }
         }
         return false
+    }
+
+    // 2초 내애 뒤로가기 버튼을 2번 누르면 종료
+    override fun onBackPressed() {
+        if(System.currentTimeMillis() - mBackWait >= 2000 ) {
+            mBackWait = System.currentTimeMillis()
+            Toast.makeText(this@MainActivity,"뒤로가기 버튼을 한번 더 누르면 종료됩니다.",Toast.LENGTH_SHORT).show()
+        }
+        else finish()
     }
 
 }
