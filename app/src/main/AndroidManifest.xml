@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.blinkingnotification">
 
+    <!--푸시 알림 위한 인터넷 권한-->
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -33,6 +36,23 @@
         <activity
             android:name=".HelpActivity"
             android:label="도움말 화면" />
+
+        <!--서비스 추가/인텐트 필터 설정-->
+        <service android:name=".FirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+        <!--알림 아이콘 설정-->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_eyes" />
+        <!--알림 아이콘 배경색 설정-->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/sky_blue" />
+
     </application>
 
 </manifest>

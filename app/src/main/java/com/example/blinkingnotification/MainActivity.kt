@@ -3,11 +3,15 @@ package com.example.blinkingnotification
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import com.example.blinkingnotification.databinding.ActivityMainBinding
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.messaging.FirebaseMessaging
 
+private const val TAG = "mmm"
 private lateinit var binding: ActivityMainBinding
 
 // 메인 화면
@@ -29,6 +33,19 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this@MainActivity, SetAlarmActivity::class.java)
             startActivity(intent)
         }
+
+        // 파이어베이스 토큰 가져오기
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w(TAG, "Fetching FCM registration token failed", task.exception)
+                return@OnCompleteListener
+            }
+
+            // Get new FCM registration token
+            val token = task.result
+
+            Toast.makeText(baseContext, token, Toast.LENGTH_SHORT).show()
+        })
 
     }
 
