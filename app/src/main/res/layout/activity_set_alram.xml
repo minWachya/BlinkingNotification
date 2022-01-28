@@ -6,15 +6,38 @@
     android:layout_height="match_parent"
     tools:context=".SetAlarmActivity">
 
-    <LinearLayout
-        android:id="@+id/temp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/pushSample"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:background="@color/yellow"
+        android:layout_height="100dp"
+        android:layout_margin="20dp"
+        android:background="@drawable/view_round"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:orientation="horizontal"
-        tools:ignore="MissingConstraints" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints">
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="30dp"
+            android:paddingTop="20dp"
+            android:text="제목"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="RtlSymmetry" />
+
+        <TextView
+            android:id="@+id/tvContent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="30dp"
+            android:paddingTop="20dp"
+            android:text="내용"
+            app:layout_constraintTop_toBottomOf="@+id/tvTitle" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
         android:id="@+id/textView1"
@@ -22,10 +45,11 @@
         android:layout_height="wrap_content"
         android:padding="10dp"
         android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
         android:text="1. 알림 내용"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/temp" />
+        app:layout_constraintTop_toBottomOf="@+id/pushSample" />
     <View
         android:id="@+id/view1"
         android:layout_width="match_parent"
@@ -35,8 +59,9 @@
         android:background="@color/sky_blue"
         app:layout_constraintBottom_toBottomOf="@+id/textView1" />
     <EditText
-        android:id="@+id/edit1"
+        android:id="@+id/editTitle"
         android:layout_width="match_parent"
+        android:hint="제목"
         android:layout_height="50dp"
         android:layout_marginTop="10dp"
         android:layout_marginStart="20dp"
@@ -44,6 +69,17 @@
         android:background="@color/gray"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/view1" />
+    <EditText
+        android:id="@+id/editContent"
+        android:layout_width="match_parent"
+        android:hint="내용"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:background="@color/gray"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTitle" />
 
     <TextView
         android:id="@+id/textView2"
@@ -51,10 +87,11 @@
         android:layout_height="wrap_content"
         android:padding="10dp"
         android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
         android:text="2. 반복 시간"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit1"
+        app:layout_constraintTop_toBottomOf="@+id/editContent"
         tools:ignore="MissingConstraints" />
     <View
         android:id="@+id/view2"
@@ -82,6 +119,7 @@
         android:layout_height="wrap_content"
         android:padding="10dp"
         android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
         android:text="3. 알림 형식"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
@@ -113,6 +151,7 @@
         android:layout_height="wrap_content"
         android:padding="10dp"
         android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
         android:text="4. 이미지 선택"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"

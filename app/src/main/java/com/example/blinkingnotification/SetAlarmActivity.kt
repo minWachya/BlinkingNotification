@@ -7,6 +7,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.Toast
+import androidx.core.widget.doOnTextChanged
 import com.example.blinkingnotification.databinding.ActivitySetAlramBinding
 
 private lateinit var binding: ActivitySetAlramBinding
@@ -18,6 +19,16 @@ class SetAlarmActivity : AppCompatActivity() {
         binding = ActivitySetAlramBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+
+        // 제목/내용 입력할 때마다 실시간으로 미리보기 변경
+        binding.editTitle.doOnTextChanged { _, _, _, _ ->
+            val title = binding.editTitle.text.toString()
+            binding.tvTitle.text = title
+        }
+        binding.editContent.doOnTextChanged { _, _, _, _ ->
+            val content = binding.editContent.text.toString()
+            binding.tvContent.text = content
+        }
 
         // 반복 시간 스피너 설정
         // 배열 추가
