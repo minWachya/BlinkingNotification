@@ -15,21 +15,25 @@ import androidx.activity.result.contract.ActivityResultContracts
 import android.media.ExifInterface
 import android.net.Uri
 import android.os.Build
-import android.provider.MediaStore
+import androidx.core.widget.addTextChangedListener
 import android.util.Log
 import androidx.annotation.RequiresApi
 import java.io.IOException
 import android.graphics.Bitmap
 import android.graphics.Matrix
+import com.google.firebase.messaging.RemoteMessage
 import java.lang.Exception
 
 
 private const val TAG = "mmm"
-private const val PICK_FROM_ALBUM = 0
 private lateinit var binding: ActivitySetAlramBinding
 
 // 알림 설정 화면
 class SetAlarmActivity : AppCompatActivity() {
+    // 제목, 내용 입력 여부
+    var checkTitle = false
+    var checkContent = false
+
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,13 +55,12 @@ class SetAlarmActivity : AppCompatActivity() {
                     val newBitmap = getRotatedBitmap(bitmap, orientation)
                     // 회전된 이미지로 imaView 설정
                     binding.imgView.setImageBitmap(newBitmap)
-
                 }
                 else binding.imgView.setImageResource(R.drawable.ic_launcher_background)
             }
         }
 
-        // 제목/내용 입력할 때마다 실시간으로 미리보기 변경
+        // 푸시 알림 실시간으로 미리보기
         binding.editTitle.doOnTextChanged { _, _, _, _ ->
             val title = binding.editTitle.text.toString()
             binding.tvTitle.text = title
@@ -65,6 +68,16 @@ class SetAlarmActivity : AppCompatActivity() {
         binding.editContent.doOnTextChanged { _, _, _, _ ->
             val content = binding.editContent.text.toString()
             binding.tvContent.text = content
+        }
+
+        // 1번: 제목, 내용 입력
+        binding.editTitle.addTextChangedListener {
+            checkTitle = binding.editTitle.text.trim().toString().isNotEmpty()
+            btnEnableCheck()    // 제목, 내용 모두 입력해야 버튼 활성화
+        }
+        binding.editContent.addTextChangedListener {
+            checkContent = binding.editContent.text.trim().toString().isNotEmpty()
+            btnEnableCheck()    // 제목, 내용 모두 입력해야 버튼 활성화
         }
 
         // 2번: 반복 시간 스피너 설정
@@ -138,12 +151,24 @@ class SetAlarmActivity : AppCompatActivity() {
             getFromAlbumResultLauncher.launch(intent)
         }
 
+        // 완료 버튼
+        binding.btnOK.setOnClickListener {
+            val title = binding.editTitle.text.toString()
+            val content = binding.editContent.text.toString()
+
+            val bundle = Bundle()
+            bundle.putString("title", title)
+            bundle.putString("message", content)
+            val remoteMessage = RemoteMessage(bundle)
+            val fcm = FirebaseMessagingService(applicationContext)
+            fcm.onMessageReceived(remoteMessage)
+        }
+
     }
 
     // 이미지 회전 정보 가져오기
     @RequiresApi(Build.VERSION_CODES.N)
     private fun getOrientationOfImage(uri: Uri): Int {
-        // uri -> 절대경로
         val inputStream = contentResolver.openInputStream(uri)
         val exif: ExifInterface? = try {
             ExifInterface(inputStream!!)
@@ -172,6 +197,11 @@ class SetAlarmActivity : AppCompatActivity() {
         val m = Matrix()
         m.setRotate(degrees, bitmap.width.toFloat() / 2, bitmap.height.toFloat() / 2)
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, m, true)
+    }
+
+    // 모두 입력 시 버튼 활성화
+    fun btnEnableCheck() {
+        binding.btnOK.isEnabled = checkTitle && checkContent
     }
 
 

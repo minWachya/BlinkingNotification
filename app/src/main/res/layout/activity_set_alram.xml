@@ -11,8 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:layout_margin="20dp"
-        android:padding="10dp"
         android:background="@drawable/view_round"
+        android:padding="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="10dp"
-            android:text="제목"
+            android:hint="제목"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="RtlSymmetry" />
@@ -35,18 +35,18 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="15dp"
-            android:text="내용"
+            android:hint="내용"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvTitle"
             tools:ignore="RtlSymmetry" />
 
         <ImageView
             android:id="@+id/imgView"
-            android:visibility="invisible"
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_marginEnd="20dp"
             android:src="@drawable/ic_launcher_background"
+            android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="parent"
             tools:ignore="RtlSymmetry" />
 
@@ -56,41 +56,44 @@
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="10dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
+        android:padding="10dp"
         android:text="1. 알림 내용"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/pushSample" />
+
     <View
         android:id="@+id/view1"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="4dp"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         android:background="@color/sky_blue"
-        app:layout_constraintBottom_toBottomOf="@+id/textView1" />
+        app:layout_constraintBottom_toBottomOf="@+id/textView1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <EditText
         android:id="@+id/editTitle"
         android:layout_width="match_parent"
-        android:hint="제목"
         android:layout_height="50dp"
-        android:layout_marginTop="10dp"
         android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
+        android:layout_marginTop="10dp"
         android:background="@color/gray"
+        android:hint="제목"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/view1" />
+
     <EditText
         android:id="@+id/editContent"
         android:layout_width="match_parent"
-        android:hint="내용"
         android:layout_height="50dp"
-        android:layout_marginTop="10dp"
         android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
+        android:layout_marginTop="10dp"
         android:background="@color/gray"
+        android:hint="내용"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTitle" />
 
@@ -98,97 +101,112 @@
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="10dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="10dp"
+        android:padding="10dp"
         android:text="2. 반복 시간"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editContent"
         tools:ignore="MissingConstraints" />
+
     <View
         android:id="@+id/view2"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="4dp"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         android:background="@color/sky_blue"
         app:layout_constraintBottom_toBottomOf="@+id/textView2"
-        tools:layout_editor_absoluteX="20dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <Spinner
         android:id="@+id/spinnerSelectTime"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="50dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="20dp"
         android:background="@color/gray"
         android:spinnerMode="dropdown"
-        android:layout_marginTop="10dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/view2" />
 
     <TextView
         android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="10dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="10dp"
+        android:padding="10dp"
         android:text="3. 알림 형식"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/spinnerSelectTime"
         tools:ignore="MissingConstraints" />
+
     <View
         android:id="@+id/view3"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="4dp"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         android:background="@color/sky_blue"
         app:layout_constraintBottom_toBottomOf="@+id/textView3"
-        tools:layout_editor_absoluteX="20dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <Spinner
         android:id="@+id/spinnerSelectMode"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="50dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="20dp"
         android:background="@color/gray"
         android:spinnerMode="dropdown"
-        android:layout_marginTop="10dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/view3" />
 
     <TextView
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="10dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="10dp"
+        android:padding="10dp"
         android:text="4. 이미지 선택"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/spinnerSelectMode"
         tools:ignore="MissingConstraints" />
+
     <View
         android:id="@+id/view4"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="4dp"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         android:background="@color/sky_blue"
         app:layout_constraintBottom_toBottomOf="@+id/textView4"
-        tools:layout_editor_absoluteX="20dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <Button
         android:id="@+id/btnSelectImage"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="50dp"
-        android:text="이미지 선택하기"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="20dp"
         android:background="@color/gray"
         android:spinnerMode="dropdown"
-        android:layout_marginTop="10dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
+        android:text="이미지 선택하기"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/view4" />
 
 
@@ -196,7 +214,8 @@
         android:id="@+id/btnOK"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/yellow"
+        android:enabled="false"
+        android:background="@drawable/btn_enable"
         android:text="완료"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
