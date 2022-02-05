@@ -7,6 +7,9 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.blinkingnotification.adapter.Alarm
+import com.example.blinkingnotification.adapter.AlarmAdapter
 import com.example.blinkingnotification.databinding.ActivityMainBinding
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
@@ -24,6 +27,17 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+
+        // 리사이클러뷰 매니저 설정
+        val layoutManager = LinearLayoutManager(applicationContext)
+        binding.recyclerView.layoutManager = layoutManager
+        // 리아시클러뷰에 어댑터 달기
+        val alarmAdapter = AlarmAdapter()
+        binding.recyclerView.adapter = alarmAdapter
+        alarmAdapter.arrAlarm.add(Alarm("제목1", "내용1", null))
+        alarmAdapter.arrAlarm.add(Alarm("제목2", "내용2", null))
+        alarmAdapter.arrAlarm.add(Alarm("제목3", "내용3", null))
+        alarmAdapter.notifyDataSetChanged()
 
         // 서브 메뉴 달기
         setSupportActionBar(binding.toolBar)

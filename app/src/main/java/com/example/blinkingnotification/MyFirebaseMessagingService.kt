@@ -9,7 +9,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.util.Log
-import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.google.firebase.messaging.FirebaseMessagingService
@@ -22,7 +21,7 @@ enum class NotificationType(val title: String, val id: Int) {
     CUSTOM("커스텀 알림", 3),
 }
 
-class FirebaseMessagingService(val context: Context) : FirebaseMessagingService() {
+class MyFirebaseMessagingService(val context: Context) : FirebaseMessagingService() {
     companion object {
         const val TAG = "mmmMessagingService"
         private const val CHANNEL_NAME = "Push Notification"

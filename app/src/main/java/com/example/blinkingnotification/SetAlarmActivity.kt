@@ -25,7 +25,7 @@ import com.google.firebase.messaging.RemoteMessage
 import java.lang.Exception
 
 
-private const val TAG = "mmm"
+private const val TAG = "mmmSetAlarmActivity"
 private lateinit var binding: ActivitySetAlramBinding
 
 // 알림 설정 화면
@@ -160,7 +160,7 @@ class SetAlarmActivity : AppCompatActivity() {
             bundle.putString("title", title)
             bundle.putString("message", content)
             val remoteMessage = RemoteMessage(bundle)
-            val fcm = FirebaseMessagingService(applicationContext)
+            val fcm = MyFirebaseMessagingService(applicationContext)
             fcm.onMessageReceived(remoteMessage)
         }
 

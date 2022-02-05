@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.blinkingnotification">
 
     <!--푸시 알림 위한 인터넷 권한-->
@@ -37,8 +38,10 @@
             android:label="도움말 화면" />
 
         <!--서비스 추가/인텐트 필터 설정-->
-        <service android:name=".FirebaseMessagingService"
-            android:exported="false">
+        <service android:name=".MyFirebaseMessagingService"
+            android:enabled="true"
+            android:exported="false"
+            tools:ignore="Instantiatable">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
