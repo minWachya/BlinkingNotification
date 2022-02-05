@@ -9,9 +9,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.blinkingnotification.R
 import kotlinx.android.synthetic.main.list_item_alarm.view.*
 
-data class Alarm(val title: String, val content: String, val img: Bitmap? = null)
+data class Alarm(val title: String,
+                 val content: String,
+                 val img: Bitmap? = null,
+                 val repeatTime: String,
+                 val alarmType: String)
 
-class AlarmAdapter() : RecyclerView.Adapter<AlarmAdapter.ViewHolder>() {
+class AlarmAdapter : RecyclerView.Adapter<AlarmAdapter.ViewHolder>() {
     val arrAlarm = ArrayList<Alarm>() // 알림 배열
 
     // 뷰홀더 생성

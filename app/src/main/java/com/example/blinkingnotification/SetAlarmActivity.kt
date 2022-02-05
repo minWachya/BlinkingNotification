@@ -21,8 +21,15 @@ import androidx.annotation.RequiresApi
 import java.io.IOException
 import android.graphics.Bitmap
 import android.graphics.Matrix
+import com.example.blinkingnotification.adapter.Alarm
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.RemoteMessage
 import java.lang.Exception
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 private const val TAG = "mmmSetAlarmActivity"
@@ -107,7 +114,7 @@ class SetAlarmActivity : AppCompatActivity() {
 
         // 3번: 알림 형식 스피너 설정
         // 배열 추가
-        val selectModeSpinner = binding.spinnerSelectMode
+        val selectModeSpinner = binding.spinnerSelectType
         ArrayAdapter.createFromResource(
             this@SetAlarmActivity,
             R.array.select_mode_array,
@@ -155,13 +162,20 @@ class SetAlarmActivity : AppCompatActivity() {
         binding.btnOK.setOnClickListener {
             val title = binding.editTitle.text.toString()
             val content = binding.editContent.text.toString()
+            val repeatTime = binding.spinnerSelectTime.selectedItem.toString()
+            val alarmType = binding.spinnerSelectType.selectedItem.toString()
 
+            // FCM 보내기
             val bundle = Bundle()
             bundle.putString("title", title)
             bundle.putString("message", content)
             val remoteMessage = RemoteMessage(bundle)
             val fcm = MyFirebaseMessagingService(applicationContext)
             fcm.onMessageReceived(remoteMessage)
+
+            // DB에 저장
+            if(alarmType == "기본") saveAlarm(Alarm(title, content, null, repeatTime, alarmType))
+            else saveAlarm(Alarm(title, content, null, repeatTime, alarmType))
         }
 
     }
@@ -200,8 +214,28 @@ class SetAlarmActivity : AppCompatActivity() {
     }
 
     // 모두 입력 시 버튼 활성화
-    fun btnEnableCheck() {
+    private fun btnEnableCheck() {
         binding.btnOK.isEnabled = checkTitle && checkContent
+    }
+
+    // <완료> 버튼 클릭 시 DB에 알림 정보 저장
+    private fun saveAlarm(alarm: Alarm) {
+        // 파이어베이스 토큰 가져오기
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Toast.makeText(applicationContext, "다시 시도해주세요: 토큰 가져오기 실패", Toast.LENGTH_SHORT).show()
+                return@OnCompleteListener
+            }
+            // 저장: token/날짜시간/알림내용
+            val token = task.result
+            val timeStamp = SimpleDateFormat("yyMMdd_HHmmss").format(Date())
+            Firebase.firestore.collection(token).document(timeStamp).set(alarm)
+                .addOnCompleteListener {
+                    if(it.isSuccessful) Toast.makeText(applicationContext, "알림을 저장했습니다.", Toast.LENGTH_SHORT).show()
+                    else Toast.makeText(applicationContext, "다시 시도해주세요: 저장 실패", Toast.LENGTH_SHORT).show()
+                }
+        })
+
     }
 
 

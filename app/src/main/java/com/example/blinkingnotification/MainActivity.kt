@@ -8,13 +8,10 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.blinkingnotification.adapter.Alarm
 import com.example.blinkingnotification.adapter.AlarmAdapter
 import com.example.blinkingnotification.databinding.ActivityMainBinding
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.messaging.FirebaseMessaging
 
-private const val TAG = "mmm"
+private const val TAG = "mmmMainActivity"
 private lateinit var binding: ActivityMainBinding
 
 // 메인 화면
@@ -34,10 +31,6 @@ class MainActivity : AppCompatActivity() {
         // 리아시클러뷰에 어댑터 달기
         val alarmAdapter = AlarmAdapter()
         binding.recyclerView.adapter = alarmAdapter
-        alarmAdapter.arrAlarm.add(Alarm("제목1", "내용1", null))
-        alarmAdapter.arrAlarm.add(Alarm("제목2", "내용2", null))
-        alarmAdapter.arrAlarm.add(Alarm("제목3", "내용3", null))
-        alarmAdapter.notifyDataSetChanged()
 
         // 서브 메뉴 달기
         setSupportActionBar(binding.toolBar)
@@ -47,19 +40,6 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this@MainActivity, SetAlarmActivity::class.java)
             startActivity(intent)
         }
-
-        // 파이어베이스 토큰 가져오기
-        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
-            if (!task.isSuccessful) {
-                Log.w(TAG, "Fetching FCM registration token failed", task.exception)
-                return@OnCompleteListener
-            }
-
-            // Get new FCM registration token
-            val token = task.result
-
-            Toast.makeText(baseContext, token, Toast.LENGTH_SHORT).show()
-        })
 
     }
 
