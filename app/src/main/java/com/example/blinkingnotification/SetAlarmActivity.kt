@@ -231,7 +231,10 @@ class SetAlarmActivity : AppCompatActivity() {
             val timeStamp = SimpleDateFormat("yyMMdd_HHmmss").format(Date())
             Firebase.firestore.collection(token).document(timeStamp).set(alarm)
                 .addOnCompleteListener {
-                    if(it.isSuccessful) Toast.makeText(applicationContext, "알림을 저장했습니다.", Toast.LENGTH_SHORT).show()
+                    if(it.isSuccessful) {
+                        Toast.makeText(applicationContext, "알림을 저장했습니다.", Toast.LENGTH_SHORT).show()
+                        finish()
+                    }
                     else Toast.makeText(applicationContext, "다시 시도해주세요: 저장 실패", Toast.LENGTH_SHORT).show()
                 }
         })
