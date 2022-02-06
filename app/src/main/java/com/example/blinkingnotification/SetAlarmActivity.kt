@@ -30,8 +30,6 @@ import com.google.firebase.messaging.RemoteMessage
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
-import java.io.File
-import java.io.FileInputStream
 import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
@@ -70,25 +68,6 @@ class SetAlarmActivity : AppCompatActivity() {
             }
             token = task.result
         })
-
-        // 갤러리에서 사진 선택 후 실행
-        val getFromAlbumResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                uri = result.data?.data // 선택한 이미지의 주소
-                // 이미지 파일 읽어와서 설정하기
-                if (uri != null) {
-                    // 사진 가져오기
-                    val bitmap = BitmapFactory.decodeStream(contentResolver.openInputStream(uri!!))
-                    // 사진의 회전 정보 가져오기
-                    val orientation = getOrientationOfImage(uri!!).toFloat()
-                    // 이미지 회전하기
-                    val newBitmap = getRotatedBitmap(bitmap, orientation)
-                    // 회전된 이미지로 imaView 설정
-                    binding.imgView.setImageBitmap(newBitmap)
-                }
-                else binding.imgView.setImageResource(R.drawable.ic_launcher_background)
-            }
-        }
 
         // 푸시 알림 실시간으로 미리보기
         binding.editTitle.doOnTextChanged { _, _, _, _ ->
@@ -144,6 +123,7 @@ class SetAlarmActivity : AppCompatActivity() {
                             binding.view4.visibility = View.INVISIBLE
                             binding.btnSelectImage.visibility = View.INVISIBLE
                             binding.imgView.visibility = View.INVISIBLE
+                            btnEnableCheck()
                         }
                         1 -> {
                             // 4. 이미지 선택 보이기
@@ -151,6 +131,7 @@ class SetAlarmActivity : AppCompatActivity() {
                             binding.view4.visibility = View.VISIBLE
                             binding.btnSelectImage.visibility = View.VISIBLE
                             binding.imgView.visibility = View.VISIBLE
+                            btnEnableCheck()
                         }
                         else -> { Toast.makeText(applicationContext, "다시 선택해주세요.", Toast.LENGTH_SHORT).show() }
                     }
@@ -160,6 +141,26 @@ class SetAlarmActivity : AppCompatActivity() {
         }
 
         // 4번: 이미지 설정
+        // 갤러리에서 사진 선택 후 실행
+        val getFromAlbumResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                uri = result.data?.data // 선택한 이미지의 주소
+                // 이미지 파일 읽어와서 설정하기
+                if (uri != null) {
+                    // 사진 가져오기
+                    val bitmap = BitmapFactory.decodeStream(contentResolver.openInputStream(uri!!))
+                    // 사진의 회전 정보 가져오기
+                    val orientation = getOrientationOfImage(uri!!).toFloat()
+                    // 이미지 회전하기
+                    val newBitmap = getRotatedBitmap(bitmap, orientation)
+                    // 회전된 이미지로 imaView 설정
+                    binding.imgView.setImageBitmap(newBitmap)
+                }
+                else binding.imgView.setImageResource(R.drawable.ic_launcher_background)
+
+                btnEnableCheck()
+            }
+        }
         // 이미지 추가하기
         binding.btnSelectImage.setOnClickListener {
             // 갤러리에서 사진 선택해서 가져오기
@@ -175,6 +176,9 @@ class SetAlarmActivity : AppCompatActivity() {
             val repeatTime = binding.spinnerSelectTime.selectedItem.toString()
             val alarmType = binding.spinnerSelectType.selectedItem.toString()
 
+            // DB에 저장
+            saveAlarm(Alarm(title, content, null, repeatTime, alarmType))
+
             // FCM 보내기
             val bundle = Bundle()
             bundle.putString("title", title)
@@ -182,9 +186,6 @@ class SetAlarmActivity : AppCompatActivity() {
             val remoteMessage = RemoteMessage(bundle)
             val fcm = MyFirebaseMessagingService(applicationContext)
             fcm.onMessageReceived(remoteMessage)
-
-            // DB에 저장
-            saveAlarm(Alarm(title, content, null, repeatTime, alarmType))
         }
 
     }
@@ -224,7 +225,10 @@ class SetAlarmActivity : AppCompatActivity() {
 
     // 모두 입력 시 버튼 활성화
     private fun btnEnableCheck() {
-        binding.btnOK.isEnabled = checkTitle && checkContent
+        val alarmType = binding.spinnerSelectType.selectedItem.toString()
+        if (alarmType == "기본") binding.btnOK.isEnabled = checkTitle && checkContent
+        else binding.btnOK.isEnabled = checkTitle && checkContent && uri != null
+
     }
 
     // <완료> 버튼 클릭 시 DB에 알림 정보 저장

@@ -7,6 +7,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
@@ -19,6 +20,7 @@ enum class NotificationType(val title: String, val id: Int) {
     NORMAL("일반 알림", 0),
     EXPANDABLE("확장형 알림", 1),
     CUSTOM("커스텀 알림", 3),
+    IMAGE("이미지 알림", 4)
 }
 
 class MyFirebaseMessagingService(val context: Context) : FirebaseMessagingService() {
@@ -100,6 +102,7 @@ class MyFirebaseMessagingService(val context: Context) : FirebaseMessagingServic
             .setSmallIcon(R.drawable.ic_eyes)
             .setContentTitle(title)
             .setContentText(message)
+            .setColor(Color.argb(27,255,0,255)) // 앱 제목 색
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingIntent)  //알림 눌렀을 때 실행할 Intent 설정
             .setAutoCancel(true)  //클릭 시 자동으로 삭제되도록 설정
@@ -113,6 +116,11 @@ class MyFirebaseMessagingService(val context: Context) : FirebaseMessagingServic
                         .bigText("$message \n 😀 😃 😄 😁 😆 😅 😂 🤣 🥲  😐 😑 😬 🙄 😯 😦 😧 😮 😲 🥱 😴 🤤 😪 😵 🤐 🥴 🤢 🤮 🤧 😷 🤒 🤕")
                 )
             }
+//            NotificationType.IMAGE -> {
+//                notificationBuilder.setStyle(
+//                    NotificationCompat.BigPictureStyle().bigPicture(bitmap)
+//                )
+//            }
 //            NotificationType.CUSTOM -> {
 //                notificationBuilder.setStyle(
 //                    NotificationCompat.DecoratedCustomViewStyle()
