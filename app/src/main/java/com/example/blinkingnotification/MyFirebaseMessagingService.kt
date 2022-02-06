@@ -7,13 +7,23 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.util.Log
+import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import kotlinx.coroutines.*
+import java.net.HttpURLConnection
+import java.net.URL
 
 // 알림 유형
 enum class NotificationType(val title: String, val id: Int) {
@@ -49,12 +59,13 @@ class MyFirebaseMessagingService(val context: Context) : FirebaseMessagingServic
         }
         val title = remoteMessage.data["title"]
         val message = remoteMessage.data["message"]
+        val imgUrl = remoteMessage.data["imgUrl"]
 
         Log.d(TAG, "onMessageReceived() - type : $type")
         Log.d(TAG, "onMessageReceived() - title : $title")
         Log.d(TAG, "onMessageReceived() - message : $message")
 
-        sendNotification(type, title, message)
+        sendNotification(type, title, message, imgUrl)
     }
 
 
@@ -62,7 +73,8 @@ class MyFirebaseMessagingService(val context: Context) : FirebaseMessagingServic
     private fun sendNotification(
         type: NotificationType,
         title: String?,
-        message: String?
+        message: String?,
+        imgUrl: String?
     ) {
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
@@ -79,7 +91,7 @@ class MyFirebaseMessagingService(val context: Context) : FirebaseMessagingServic
 
         // 알림 생성
         NotificationManagerCompat.from(context)
-            .notify((System.currentTimeMillis()/100).toInt(), createNotification(type, title, message))  //알림이 여러개 표시되도록 requestCode 를 추가
+            .notify((System.currentTimeMillis()/100).toInt(), createNotification(type, title, message, imgUrl))  //알림이 여러개 표시되도록 requestCode 를 추가
     }
 
 
@@ -88,7 +100,8 @@ class MyFirebaseMessagingService(val context: Context) : FirebaseMessagingServic
     private fun createNotification(
         type: NotificationType,
         title: String?,
-        message: String?
+        message: String?,
+        imgUrl: String?
     ): Notification {
 
         val intent = Intent(context, MainActivity::class.java).apply {
@@ -116,11 +129,28 @@ class MyFirebaseMessagingService(val context: Context) : FirebaseMessagingServic
                         .bigText("$message \n 😀 😃 😄 😁 😆 😅 😂 🤣 🥲  😐 😑 😬 🙄 😯 😦 😧 😮 😲 🥱 😴 🤤 😪 😵 🤐 🥴 🤢 🤮 🤧 😷 🤒 🤕")
                 )
             }
-//            NotificationType.IMAGE -> {
+            NotificationType.IMAGE -> {
+                Glide.with(context)
+                    .asBitmap()
+                    .load(imgUrl)
+                    .into(object : CustomTarget<Bitmap>(){
+                        override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                            notificationBuilder.setStyle(
+                                NotificationCompat.BigPictureStyle().bigPicture(resource)
+                            )
+                        }
+                        override fun onLoadCleared(placeholder: Drawable?) {
+                            // this is called when imageView is cleared on lifecycle call or for
+                            // some other reason.
+                            // if you are referencing the bitmap somewhere else too other than this imageView
+                            // clear it here as you can no longer have the bitmap
+                        }
+                    })
+
 //                notificationBuilder.setStyle(
 //                    NotificationCompat.BigPictureStyle().bigPicture(bitmap)
 //                )
-//            }
+            }
 //            NotificationType.CUSTOM -> {
 //                notificationBuilder.setStyle(
 //                    NotificationCompat.DecoratedCustomViewStyle()
@@ -139,5 +169,19 @@ class MyFirebaseMessagingService(val context: Context) : FirebaseMessagingServic
         return notificationBuilder.build()
     }
 
+    private fun getBitmapFromUrl(imgUrl: String): Bitmap? {
+        try{
+          val url = URL(imgUrl)
+            val connection = url.openConnection() as HttpURLConnection
+            connection.doInput = true
+            connection.connect()
+            val input = connection.inputStream
+            val bitmap = BitmapFactory.decodeStream(input)
+            return bitmap
+        } catch(e: Exception){
+           Log.d(TAG, "getBitmapFromUrl: url로부터 bitmap 얻기 실패")
+         }
+        return null
+    }
 
 }

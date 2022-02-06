@@ -6,12 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.blinkingnotification.R
 import kotlinx.android.synthetic.main.list_item_alarm.view.*
+import java.net.URL
 
 data class Alarm(val title: String,
                  val content: String,
-                 val img: Bitmap? = null,
+                 var imgUrl: String? = null,
                  val repeatTime: String,
                  val alarmType: String)
 
@@ -41,8 +43,15 @@ class AlarmAdapter : RecyclerView.Adapter<AlarmAdapter.ViewHolder>() {
         fun setItem(item: Alarm) {
             itemView.tvTitle.text = item.title
             itemView.tvContent.text = item.content
-            if(item.img != null) itemView.imgView.setImageBitmap(item.img)
-
+            if(item.imgUrl != null) {
+                itemView.imgView.visibility = View.VISIBLE
+                Glide.with(itemView.context)
+                    .load(item.imgUrl)
+                    .error(R.drawable.ic_launcher_background)                  // 오류 시 이미지
+//                    .apply(RequestOptions().centerCrop())
+                    .into(itemView.imgView)
+            }
+//                itemView.imgView.setImageBitmap(item.img)
         }
     }
 }

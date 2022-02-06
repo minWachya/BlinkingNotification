@@ -31,6 +31,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import java.lang.Exception
+import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -178,14 +179,6 @@ class SetAlarmActivity : AppCompatActivity() {
 
             // DB에 저장
             saveAlarm(Alarm(title, content, null, repeatTime, alarmType))
-
-            // FCM 보내기
-            val bundle = Bundle()
-            bundle.putString("title", title)
-            bundle.putString("message", content)
-            val remoteMessage = RemoteMessage(bundle)
-            val fcm = MyFirebaseMessagingService(applicationContext)
-            fcm.onMessageReceived(remoteMessage)
         }
 
     }
@@ -243,7 +236,10 @@ class SetAlarmActivity : AppCompatActivity() {
 
         // 사진 저장
         if (uri != null) {
-            saveImg(timeStamp)
+            // 사진 저장
+            val url = saveImg(timeStamp)
+            alarm.imgUrl = url
+            Log.d(TAG, url)
         }
         // 알림 정보 저장
         Firebase.firestore.collection(token!!).document(timeStamp).set(alarm)
@@ -255,21 +251,32 @@ class SetAlarmActivity : AppCompatActivity() {
                 }
                 else Toast.makeText(applicationContext, "다시 시도해주세요: 저장 실패", Toast.LENGTH_SHORT).show()
             }
+
+        // FCM 보내기
+        val bundle = Bundle()
+        bundle.putString("title", alarm.title)
+        bundle.putString("message", alarm.content)
+        if (uri != null) {
+            bundle.putString("imgUrl", alarm.imgUrl)
+            bundle.putString("type", NotificationType.IMAGE.toString())
+        }
+        else bundle.putString("type", NotificationType.NORMAL.toString())
+        val remoteMessage = RemoteMessage(bundle)
+        val fcm = MyFirebaseMessagingService(applicationContext)
+        fcm.onMessageReceived(remoteMessage)
     }
 
     // "이미지" 선택 시: 이미지 저장 + URL 반환
-    private fun saveImg(timeStamp: String) {
+    private fun saveImg(timeStamp: String): String {
         val fileName = "$timeStamp.jpg" // 파일명명
         val imgRef = storageRef.child(token!!).child(fileName)
         imgRef.putFile(uri!!)
             .addOnFailureListener {
                 Toast.makeText(applicationContext, "이미지 저장에 실패했습니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show()
             }
-    }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
-        setResult(Activity.RESULT_OK)
+        return "https://firebasestorage.googleapis.com/v0/b/blinkingnotification.appspot.com/o/" +
+                token + "%2F" + fileName + "?alt=media"
     }
 
 }
