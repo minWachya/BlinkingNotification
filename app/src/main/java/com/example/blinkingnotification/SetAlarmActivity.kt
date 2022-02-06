@@ -27,6 +27,11 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.RemoteMessage
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.ktx.storage
+import java.io.File
+import java.io.FileInputStream
 import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
@@ -41,6 +46,12 @@ class SetAlarmActivity : AppCompatActivity() {
     var checkTitle = false
     var checkContent = false
 
+    private var token : String? = null   // firebase 토큰
+    private var uri : Uri? = null
+
+    private lateinit var storage: FirebaseStorage
+    private lateinit var storageRef : StorageReference
+
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,16 +59,28 @@ class SetAlarmActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
+        storage = Firebase.storage
+        storageRef = storage.reference
+
+        // 파이어베이스 토큰 가져오기 + 알림 가져오기
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Toast.makeText(applicationContext, "다시 접속해주세요: 토큰 가져오기 실패", Toast.LENGTH_SHORT).show()
+                return@OnCompleteListener
+            }
+            token = task.result
+        })
+
         // 갤러리에서 사진 선택 후 실행
         val getFromAlbumResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                val uri = result.data?.data // 선택한 이미지의 주소
+                uri = result.data?.data // 선택한 이미지의 주소
                 // 이미지 파일 읽어와서 설정하기
                 if (uri != null) {
                     // 사진 가져오기
-                    val bitmap = BitmapFactory.decodeStream(contentResolver.openInputStream(uri))
+                    val bitmap = BitmapFactory.decodeStream(contentResolver.openInputStream(uri!!))
                     // 사진의 회전 정보 가져오기
-                    val orientation = getOrientationOfImage(uri).toFloat()
+                    val orientation = getOrientationOfImage(uri!!).toFloat()
                     // 이미지 회전하기
                     val newBitmap = getRotatedBitmap(bitmap, orientation)
                     // 회전된 이미지로 imaView 설정
@@ -97,19 +120,6 @@ class SetAlarmActivity : AppCompatActivity() {
         ).also { adapter ->
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             selectTimeSpinner.adapter = adapter
-            // 어댑터 추가
-            val selectTimeSpinnerAdapter = object : AdapterView.OnItemSelectedListener {
-                override fun onNothingSelected(p0: AdapterView<*>?) {}
-
-                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                    when(position) {
-                        0 -> { Toast.makeText(applicationContext, "1분", Toast.LENGTH_SHORT).show() }
-                        1 -> { Toast.makeText(applicationContext, "5분", Toast.LENGTH_SHORT).show() }
-                        else -> { Toast.makeText(applicationContext, "다른 거", Toast.LENGTH_SHORT).show() }
-                    }
-                }
-            }
-            selectTimeSpinner.onItemSelectedListener = selectTimeSpinnerAdapter
         }
 
         // 3번: 알림 형식 스피너 설정
@@ -174,8 +184,7 @@ class SetAlarmActivity : AppCompatActivity() {
             fcm.onMessageReceived(remoteMessage)
 
             // DB에 저장
-            if(alarmType == "기본") saveAlarm(Alarm(title, content, null, repeatTime, alarmType))
-            else saveAlarm(Alarm(title, content, null, repeatTime, alarmType))
+            saveAlarm(Alarm(title, content, null, repeatTime, alarmType))
         }
 
     }
@@ -220,27 +229,43 @@ class SetAlarmActivity : AppCompatActivity() {
 
     // <완료> 버튼 클릭 시 DB에 알림 정보 저장
     private fun saveAlarm(alarm: Alarm) {
-        // 파이어베이스 토큰 가져오기
-        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
-            if (!task.isSuccessful) {
-                Toast.makeText(applicationContext, "다시 시도해주세요: 토큰 가져오기 실패", Toast.LENGTH_SHORT).show()
-                return@OnCompleteListener
-            }
-            // 저장: token/날짜시간/알림내용
-            val token = task.result
-            val timeStamp = SimpleDateFormat("yyMMdd_HHmmss").format(Date())
-            Firebase.firestore.collection(token).document(timeStamp).set(alarm)
-                .addOnCompleteListener {
-                    if(it.isSuccessful) {
-                        Toast.makeText(applicationContext, "알림을 저장했습니다.", Toast.LENGTH_SHORT).show()
-                        setResult(Activity.RESULT_OK)
-                        finish()
-                    }
-                    else Toast.makeText(applicationContext, "다시 시도해주세요: 저장 실패", Toast.LENGTH_SHORT).show()
-                }
-        })
+        if(token == null) {
+            Toast.makeText(applicationContext, "토큰 발급에 실패했습니다.", Toast.LENGTH_SHORT).show()
+            return
+        }
 
+        // 저장: token/날짜시간/알림내용
+        val timeStamp = SimpleDateFormat("yyMMdd_HHmmss").format(Date())
+
+        // 사진 저장
+        if (uri != null) {
+            saveImg(timeStamp)
+        }
+        // 알림 정보 저장
+        Firebase.firestore.collection(token!!).document(timeStamp).set(alarm)
+            .addOnCompleteListener {
+                if(it.isSuccessful) {
+                    Toast.makeText(applicationContext, "알림을 저장했습니다.", Toast.LENGTH_SHORT).show()
+                    setResult(Activity.RESULT_OK)
+                    finish()
+                }
+                else Toast.makeText(applicationContext, "다시 시도해주세요: 저장 실패", Toast.LENGTH_SHORT).show()
+            }
     }
 
+    // "이미지" 선택 시: 이미지 저장 + URL 반환
+    private fun saveImg(timeStamp: String) {
+        val fileName = "$timeStamp.jpg" // 파일명명
+        val imgRef = storageRef.child(token!!).child(fileName)
+        imgRef.putFile(uri!!)
+            .addOnFailureListener {
+                Toast.makeText(applicationContext, "이미지 저장에 실패했습니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        setResult(Activity.RESULT_OK)
+    }
 
 }

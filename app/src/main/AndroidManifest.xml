@@ -5,6 +5,8 @@
 
     <!--푸시 알림 위한 인터넷 권한-->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!--이미지 저장-->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
     <application
         android:allowBackup="true"

@@ -60,7 +60,6 @@ class MainActivity : AppCompatActivity() {
         // '알림 설정 화면'으로 이동 후 실행할 작업: Firebase에서 알림 정보 가져오기
         val setAlarmActivityResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) getAlarms(token)
-            else Toast.makeText(applicationContext, "알림 업데이트에 실패했습니다.", Toast.LENGTH_SHORT).show()
         }
         // + 버튼 누르면 '알림 설정 화면'으로 이동
         binding.fab.setOnClickListener {
