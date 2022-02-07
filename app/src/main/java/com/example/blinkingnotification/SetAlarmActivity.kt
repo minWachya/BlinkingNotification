@@ -259,6 +259,7 @@ class SetAlarmActivity : AppCompatActivity() {
         if (uri != null) {
             bundle.putString("imgUrl", alarm.imgUrl)
             bundle.putString("type", NotificationType.IMAGE.toString())
+            bundle.putString("imgUri", uri.toString())
         }
         else bundle.putString("type", NotificationType.NORMAL.toString())
         val remoteMessage = RemoteMessage(bundle)

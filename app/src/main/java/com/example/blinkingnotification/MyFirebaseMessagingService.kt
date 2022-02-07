@@ -12,16 +12,16 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Build
+import android.provider.MediaStore
 import android.util.Log
-import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.net.toUri
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import kotlinx.coroutines.*
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -60,12 +60,13 @@ class MyFirebaseMessagingService(val context: Context) : FirebaseMessagingServic
         val title = remoteMessage.data["title"]
         val message = remoteMessage.data["message"]
         val imgUrl = remoteMessage.data["imgUrl"]
+        val imgUri = remoteMessage.data["imgUri"]
 
         Log.d(TAG, "onMessageReceived() - type : $type")
         Log.d(TAG, "onMessageReceived() - title : $title")
         Log.d(TAG, "onMessageReceived() - message : $message")
 
-        sendNotification(type, title, message, imgUrl)
+        sendNotification(type, title, message, imgUri)
     }
 
 
@@ -130,26 +131,34 @@ class MyFirebaseMessagingService(val context: Context) : FirebaseMessagingServic
                 )
             }
             NotificationType.IMAGE -> {
-                Glide.with(context)
-                    .asBitmap()
-                    .load(imgUrl)
-                    .into(object : CustomTarget<Bitmap>(){
-                        override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                            notificationBuilder.setStyle(
-                                NotificationCompat.BigPictureStyle().bigPicture(resource)
-                            )
-                        }
-                        override fun onLoadCleared(placeholder: Drawable?) {
-                            // this is called when imageView is cleared on lifecycle call or for
-                            // some other reason.
-                            // if you are referencing the bitmap somewhere else too other than this imageView
-                            // clear it here as you can no longer have the bitmap
-                        }
-                    })
+//                var bitmap: Bitmap? = null
+//                Glide.with(context)
+//                    .asBitmap()
+//                    .load(URL("https://firebasestorage.googleapis.com/v0/b/blinkingnotification.appspot.com/o/f8O4296YRSau9RMKir-z7k%3AAPA91bGRPZPRzc_HmLEamDUWP9XdX_WC-WI_kjUS0c1pXh7v-Nf3yAJ3LG7_35sikWJ1d3sKNR8b7NwzywZRFUOjZN0Hp6zKycvBL__zBSd6h0N5B-i-ZNBIumthojO7Xzj42CMx8_00%2F220207_143213.jpg?alt=media"))
+//                    .into(object : CustomTarget<Bitmap>(){
+//                        override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+//                            bitmap = resource
+//                            Log.d(TAG, "이미지 비트맵으로 전환 성공")
+//                        }
+//                        override fun onLoadCleared(placeholder: Drawable?) {
+//                            // this is called when imageView is cleared on lifecycle call or for
+//                            // some other reason.
+//                            // if you are referencing the bitmap somewhere else too other than this imageView
+//                            // clear it here as you can no longer have the bitmap
+//                        }
+//                    }).run {
+//                        notificationBuilder.setStyle(
+//                            NotificationCompat.BigPictureStyle().bigPicture(bitmap)
+//                        )
+//                        Log.d(TAG, "이미지 넣음")
+//                    }
 
-//                notificationBuilder.setStyle(
-//                    NotificationCompat.BigPictureStyle().bigPicture(bitmap)
-//                )
+                val uri = imgUrl!!.toUri()
+                val bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
+                notificationBuilder.setStyle(
+                            NotificationCompat.BigPictureStyle().bigPicture(bitmap)
+                        )
+
             }
 //            NotificationType.CUSTOM -> {
 //                notificationBuilder.setStyle(
@@ -170,17 +179,16 @@ class MyFirebaseMessagingService(val context: Context) : FirebaseMessagingServic
     }
 
     private fun getBitmapFromUrl(imgUrl: String): Bitmap? {
-        try{
-          val url = URL(imgUrl)
+        try {
+            val url = URL(imgUrl)
             val connection = url.openConnection() as HttpURLConnection
             connection.doInput = true
             connection.connect()
             val input = connection.inputStream
-            val bitmap = BitmapFactory.decodeStream(input)
-            return bitmap
-        } catch(e: Exception){
-           Log.d(TAG, "getBitmapFromUrl: url로부터 bitmap 얻기 실패")
-         }
+            return BitmapFactory.decodeStream(input)
+        } catch (e: Exception) {
+            Log.d(TAG, "getBitmapFromUrl: url로부터 bitmap 얻기 실패")
+        }
         return null
     }
 
