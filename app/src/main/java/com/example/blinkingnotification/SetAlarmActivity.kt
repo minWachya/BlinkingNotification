@@ -1,6 +1,9 @@
 package com.example.blinkingnotification
 
 import android.app.Activity
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -21,6 +24,7 @@ import androidx.annotation.RequiresApi
 import java.io.IOException
 import android.graphics.Bitmap
 import android.graphics.Matrix
+import android.os.SystemClock
 import com.example.blinkingnotification.adapter.Alarm
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.firestore.ktx.firestore
@@ -34,6 +38,7 @@ import java.lang.Exception
 import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 
 private const val TAG = "mmmSetAlarmActivity"
@@ -177,8 +182,11 @@ class SetAlarmActivity : AppCompatActivity() {
             val repeatTime = binding.spinnerSelectTime.selectedItem.toString()
             val alarmType = binding.spinnerSelectType.selectedItem.toString()
 
+            val alarm = Alarm(title, content, null, repeatTime, alarmType)
             // DB에 저장
-            saveAlarm(Alarm(title, content, null, repeatTime, alarmType))
+            saveAlarm(alarm)
+            // 알림 울리기
+            startAlarm(alarm)
         }
 
     }
@@ -278,6 +286,31 @@ class SetAlarmActivity : AppCompatActivity() {
 
         return "https://firebasestorage.googleapis.com/v0/b/blinkingnotification.appspot.com/o/" +
                 token + "%2F" + fileName + "?alt=media"
+    }
+
+    // 알림 시작
+    private fun startAlarm(alarm: Alarm) {
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as? AlarmManager
+        val alarmIntent = Intent(applicationContext, MainActivity::class.java).let { intent ->
+            PendingIntent.getBroadcast(applicationContext, 0, intent, 0)
+        }
+//        alarmManager?.setInexactRepeating(
+//                AlarmManager.ELAPSED_REALTIME_WAKEUP,
+//            SystemClock.elapsedRealtime() + TimeUnit.MINUTES.toMillis(1), // AlarmManager.INTERVAL_FIFTEEN_MINUTES,
+//                AlarmManager.INTERVAL_HALF_HOUR,
+//                alarmIntent
+//        )
+        val calendar: Calendar = Calendar.getInstance().apply {
+            timeInMillis = System.currentTimeMillis()
+            set(Calendar.HOUR_OF_DAY, 17)
+            set(Calendar.MINUTE, 2)
+        }
+        alarmManager?.setRepeating(
+            AlarmManager.RTC_WAKEUP,
+            calendar.timeInMillis,
+            TimeUnit.MINUTES.toMillis(1),
+            alarmIntent
+        )
     }
 
 }
