@@ -1,12 +1,14 @@
 package com.example.blinkingnotification.adapter
 
 import android.graphics.Bitmap
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.example.blinkingnotification.R
 import kotlinx.android.synthetic.main.list_item_alarm.view.*
 import java.net.URL
@@ -48,10 +50,9 @@ class AlarmAdapter : RecyclerView.Adapter<AlarmAdapter.ViewHolder>() {
                 Glide.with(itemView.context)
                     .load(item.imgUrl)
                     .error(R.drawable.ic_launcher_background)                  // 오류 시 이미지
-//                    .apply(RequestOptions().centerCrop())
+                    .apply(RequestOptions().centerCrop())
                     .into(itemView.imgView)
             }
-//                itemView.imgView.setImageBitmap(item.img)
         }
     }
 }

@@ -126,12 +126,12 @@ class MainActivity : AppCompatActivity() {
                     val map = document.data as HashMap<String, Any>
                     val title : String = map["title"] as String
                     val content : String = map["content"] as String
-//                    val img : String = map["title"] as String
+                    val imgUrl : String? = map["imgUrl"] as String?
                     val repeatTime : String = map["repeatTime"] as String
                     val alarmType : String = map["alarmType"] as String
 
                     // 어댑터에 데이터 넣기
-                    alarmAdapter.arrAlarm.add(Alarm(title, content, null, repeatTime, alarmType))
+                    alarmAdapter.arrAlarm.add(Alarm(title, content, imgUrl, repeatTime, alarmType))
                 }
                 // 어댑터 업데이트
                 alarmAdapter.notifyDataSetChanged()
