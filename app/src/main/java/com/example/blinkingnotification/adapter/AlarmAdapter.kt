@@ -1,5 +1,6 @@
 package com.example.blinkingnotification.adapter
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.blinkingnotification.R
+import com.example.blinkingnotification.SetAlarmActivity
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -45,6 +47,31 @@ class AlarmAdapter : RecyclerView.Adapter<AlarmAdapter.ViewHolder>() {
 
     // -----------------데이터 조작함수 추가-----------------
 
+    // 알림 뷰 생성
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        fun setItem(item: Alarm) {
+            itemView.item_tvTitle.text = item.title
+            itemView.item_tvContent.text = item.content
+            if(item.imgUrl != null) {
+                itemView.item_imgView.visibility = View.VISIBLE
+                Glide.with(itemView.context)
+                    .load(item.imgUrl)
+                    .error(R.drawable.ic_launcher_background)                  // 오류 시 이미지
+                    .apply(RequestOptions().centerCrop())
+                    .into(itemView.item_imgView)
+            }
+
+            // 수정하기
+            itemView.imgbtnEdit.setOnClickListener {
+                editData(this.layoutPosition, itemView)
+            }
+            // 삭제하기
+            itemView.imgbtnDelete.setOnClickListener {
+                removeData(this.layoutPosition, itemView)
+            }
+        }
+    }
+
     // position 위치의 데이터를 삭제 후 어댑터 갱신
     fun removeData(position: Int, itemView: View) {
         // 파이어베이스 토큰 가져오기 + 알림 가져오기
@@ -80,28 +107,13 @@ class AlarmAdapter : RecyclerView.Adapter<AlarmAdapter.ViewHolder>() {
         })
     }
 
-    // 알림 뷰 생성
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        fun setItem(item: Alarm) {
-            itemView.item_tvTitle.text = item.title
-            itemView.item_tvContent.text = item.content
-            if(item.imgUrl != null) {
-                itemView.item_imgView.visibility = View.VISIBLE
-                Glide.with(itemView.context)
-                    .load(item.imgUrl)
-                    .error(R.drawable.ic_launcher_background)                  // 오류 시 이미지
-                    .apply(RequestOptions().centerCrop())
-                    .into(itemView.item_imgView)
-            }
-
-            // 수정하기
-            itemView.imgbtnEdit.setOnClickListener {
-                Toast.makeText(itemView.context, "수정 작업중", Toast.LENGTH_SHORT).show()
-            }
-            // 삭제하기
-            itemView.imgbtnDelete.setOnClickListener {
-                removeData(this.layoutPosition, itemView)
-            }
-        }
+    // position 위치의 데이터 수정
+    fun editData(position: Int, itemView: View) {
+        // 알림 정보 가지고 알림 생성 화면으로 아동
+        val timeStamp = arrAlarm[position].timeStamp
+        val intent = Intent(itemView.context, SetAlarmActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)  // Activity가 아닌곳에서 startActivity() 사용
+        intent.putExtra("timeStamp", timeStamp)
+        itemView.context.applicationContext.startActivity(intent)
     }
 }

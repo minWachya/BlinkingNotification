@@ -71,6 +71,10 @@ class SetAlarmActivity : AppCompatActivity() {
                 return@OnCompleteListener
             }
             token = task.result
+
+            // 수정하기에서 접근
+            val timeStamp = intent.getStringExtra("timeStamp")
+            if(timeStamp != null) setingForEdit(timeStamp)
         })
 
         // 푸시 알림 실시간으로 미리보기
@@ -308,6 +312,51 @@ class SetAlarmActivity : AppCompatActivity() {
             TimeUnit.MINUTES.toMillis(1),
             alarmIntent
         )
+    }
+
+    // 수정하기: 알림 정보 보여주기
+    fun setingForEdit(timeStamp: String) {
+        val db = Firebase.firestore
+        val docRef = db.collection(token!!).document(timeStamp)
+
+        // 알림 데이터 가져오기
+        docRef.get()
+            .addOnSuccessListener { document ->
+                if (document != null) {
+                    val map = document.data as HashMap<String, Any>
+                    val title : String = map["title"] as String
+                    val content : String = map["content"] as String
+                    val imgUrl : String? = map["imgUrl"] as String?
+                    val strRepeatTime : String = map["repeatTime"] as String
+                    val strAlarmType : String = map["alarmType"] as String
+                    val repeatTime =
+                        when(strRepeatTime) {
+                            "1분" -> 0
+                            "5분" -> 1
+                            "10분" -> 2
+                            "20분" -> 3
+                            "30분" -> 4
+                            "40분" -> 5
+                            "50분" -> 6
+                            "1시간" -> 7
+                            else -> 0
+                        }
+                    val alarmType = if(strAlarmType == "기본") 0 else 1
+
+                    // 설정하기
+                    binding.editTitle.setText(title)
+                    binding.editContent.setText(content)
+                    binding.spinnerSelectTime.setSelection(repeatTime)
+                    binding.spinnerSelectType.setSelection(alarmType)
+
+                } else {
+                    Toast.makeText(applicationContext, "다시 시도해주세요.", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .addOnFailureListener { exception ->
+                Toast.makeText(applicationContext, "알림 정보를 불러오는 데 실패했습니다.", Toast.LENGTH_SHORT).show()
+                Log.d(TAG, "get failed with ", exception)
+            }
     }
 
 }

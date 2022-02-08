@@ -117,7 +117,7 @@ class SwipeHelperCallback(private val recyclerViewAdapter : AlarmAdapter)  : Ite
             // 현재 swipe 중이면 swipe되는 영역 제한
             if (isCurrentlyActive)
             // 오른쪽 swipe일 때
-                if (dX < 0) dX/3 - clamp
+                if (dX < 0) dX/2.5F - clamp
                 // 왼쪽 swipe일 때
                 else dX - clamp
             // swipe 중이 아니면 고정시키기
