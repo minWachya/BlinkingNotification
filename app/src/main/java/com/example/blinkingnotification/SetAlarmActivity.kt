@@ -24,7 +24,6 @@ import androidx.annotation.RequiresApi
 import java.io.IOException
 import android.graphics.Bitmap
 import android.graphics.Matrix
-import android.os.SystemClock
 import com.example.blinkingnotification.adapter.Alarm
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.firestore.ktx.firestore
@@ -35,7 +34,6 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import java.lang.Exception
-import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -182,11 +180,13 @@ class SetAlarmActivity : AppCompatActivity() {
             val repeatTime = binding.spinnerSelectTime.selectedItem.toString()
             val alarmType = binding.spinnerSelectType.selectedItem.toString()
 
-            val alarm = Alarm(title, content, null, repeatTime, alarmType)
+            // 저장: token/날짜시간/알림내용
+            val timeStamp = SimpleDateFormat("yyMMdd_HHmmss").format(Date())
+            val alarm = Alarm(title, content, null, repeatTime, alarmType, timeStamp)
             // DB에 저장
-            saveAlarm(alarm)
+            saveAlarm(alarm, timeStamp)
             // 알림 울리기
-            startAlarm(alarm)
+//            startAlarm(alarm)
         }
 
     }
@@ -233,14 +233,11 @@ class SetAlarmActivity : AppCompatActivity() {
     }
 
     // <완료> 버튼 클릭 시 DB에 알림 정보 저장
-    private fun saveAlarm(alarm: Alarm) {
+    private fun saveAlarm(alarm: Alarm, timeStamp: String) {
         if(token == null) {
             Toast.makeText(applicationContext, "토큰 발급에 실패했습니다.", Toast.LENGTH_SHORT).show()
             return
         }
-
-        // 저장: token/날짜시간/알림내용
-        val timeStamp = SimpleDateFormat("yyMMdd_HHmmss").format(Date())
 
         // 사진 저장
         if (uri != null) {

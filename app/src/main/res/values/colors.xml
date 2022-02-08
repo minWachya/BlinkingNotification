@@ -13,4 +13,6 @@
     <color name="sky_blue">#a0dfdf</color>
     <color name="yellow">#eec824</color>
     <color name="gray">#f1f1f1</color>
+    <color name="red">#ED6464</color>
+    <color name="yellow_green">#8CD062</color>
 </resources>

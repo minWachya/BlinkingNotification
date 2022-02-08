@@ -10,9 +10,12 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.blinkingnotification.adapter.Alarm
 import com.example.blinkingnotification.adapter.AlarmAdapter
+import com.example.blinkingnotification.adapter.SwipeHelperCallback
 import com.example.blinkingnotification.databinding.ActivityMainBinding
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.firestore.ktx.firestore
@@ -43,6 +46,18 @@ class MainActivity : AppCompatActivity() {
         // 리아시클러뷰에 어댑터 달기
         alarmAdapter = AlarmAdapter()
         binding.recyclerView.adapter = alarmAdapter
+        // 리사이클러뷰에 스와이프, 드래그 기능 달기
+        val swipeHelperCallback = SwipeHelperCallback(alarmAdapter).apply {
+            // 스와이프한 뒤 고정시킬 위치 지정
+            setClamp(resources.displayMetrics.widthPixels.toFloat() / 2.5F)    // 1080 / 4 = 270
+        }
+        ItemTouchHelper(swipeHelperCallback).attachToRecyclerView(binding.recyclerView)
+        // 다른 곳 터치 시 기존 선택했던 뷰 닫기
+        binding.recyclerView.setOnTouchListener { _, _ ->
+            swipeHelperCallback.removePreviousClamp(binding.recyclerView)
+            false
+        }
+
 
         // 파이어베이스 토큰 가져오기 + 알림 가져오기
         FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
@@ -129,9 +144,10 @@ class MainActivity : AppCompatActivity() {
                     val imgUrl : String? = map["imgUrl"] as String?
                     val repeatTime : String = map["repeatTime"] as String
                     val alarmType : String = map["alarmType"] as String
+                    val timeStamp : String = map["timeStamp"] as String
 
                     // 어댑터에 데이터 넣기
-                    alarmAdapter.arrAlarm.add(Alarm(title, content, imgUrl, repeatTime, alarmType))
+                    alarmAdapter.arrAlarm.add(Alarm(title, content, imgUrl, repeatTime, alarmType, timeStamp))
                 }
                 // 어댑터 업데이트
                 alarmAdapter.notifyDataSetChanged()

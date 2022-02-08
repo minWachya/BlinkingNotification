@@ -35,6 +35,11 @@ android {
     viewBinding {
         enabled true
     }
+    // 데이터 바인딩 추가
+    dataBinding {
+        //noinspection DataBindingWithoutKapt
+        enabled = true
+    }
 }
 
 dependencies {
