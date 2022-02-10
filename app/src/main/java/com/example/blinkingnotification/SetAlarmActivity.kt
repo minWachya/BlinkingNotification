@@ -24,6 +24,8 @@ import androidx.annotation.RequiresApi
 import java.io.IOException
 import android.graphics.Bitmap
 import android.graphics.Matrix
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.example.blinkingnotification.adapter.Alarm
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.firestore.ktx.firestore
@@ -33,6 +35,7 @@ import com.google.firebase.messaging.RemoteMessage
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
+import kotlinx.android.synthetic.main.list_item_alarm.view.*
 import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
@@ -49,7 +52,8 @@ class SetAlarmActivity : AppCompatActivity() {
     var checkContent = false
 
     private var token : String? = null   // firebase 토큰
-    private var uri : Uri? = null
+    private var uri : Uri? = null       // 저장 전 사진 uri
+    private var url : String? = null    // 저장 후 사진 url
 
     private lateinit var storage: FirebaseStorage
     private lateinit var storageRef : StorageReference
@@ -74,7 +78,7 @@ class SetAlarmActivity : AppCompatActivity() {
 
             // 수정하기에서 접근
             val timeStamp = intent.getStringExtra("timeStamp")
-            if(timeStamp != null) setingForEdit(timeStamp)
+            if(timeStamp != null) settingForEdit(timeStamp)
         })
 
         // 푸시 알림 실시간으로 미리보기
@@ -185,10 +189,13 @@ class SetAlarmActivity : AppCompatActivity() {
             val alarmType = binding.spinnerSelectType.selectedItem.toString()
 
             // 저장: token/날짜시간/알림내용
-            val timeStamp = SimpleDateFormat("yyMMdd_HHmmss").format(Date())
+            val timeStamp =
+                if (binding.btnOK.text == "완료") SimpleDateFormat("yyMMdd_HHmmss").format(Date())
+                else intent.getStringExtra("timeStamp")!!
             val alarm = Alarm(title, content, null, repeatTime, alarmType, timeStamp)
             // DB에 저장
             saveAlarm(alarm, timeStamp)
+
             // 알림 울리기
 //            startAlarm(alarm)
         }
@@ -232,7 +239,7 @@ class SetAlarmActivity : AppCompatActivity() {
     private fun btnEnableCheck() {
         val alarmType = binding.spinnerSelectType.selectedItem.toString()
         if (alarmType == "기본") binding.btnOK.isEnabled = checkTitle && checkContent
-        else binding.btnOK.isEnabled = checkTitle && checkContent && uri != null
+        else binding.btnOK.isEnabled = checkTitle && checkContent && (uri != null || url != null)
 
     }
 
@@ -246,9 +253,9 @@ class SetAlarmActivity : AppCompatActivity() {
         // 사진 저장
         if (uri != null) {
             // 사진 저장
-            val url = saveImg(timeStamp)
+            url = saveImg(timeStamp)
             alarm.imgUrl = url
-            Log.d(TAG, url)
+            Log.d(TAG, url!!)
         }
         // 알림 정보 저장
         Firebase.firestore.collection(token!!).document(timeStamp).set(alarm)
@@ -314,8 +321,8 @@ class SetAlarmActivity : AppCompatActivity() {
         )
     }
 
-    // 수정하기: 알림 정보 보여주기
-    fun setingForEdit(timeStamp: String) {
+    // 수정하기: 알림 정보 보여주기 + 버튼 text "수정 완료"로 변경
+    private fun settingForEdit(timeStamp: String) {
         val db = Firebase.firestore
         val docRef = db.collection(token!!).document(timeStamp)
 
@@ -326,7 +333,7 @@ class SetAlarmActivity : AppCompatActivity() {
                     val map = document.data as HashMap<String, Any>
                     val title : String = map["title"] as String
                     val content : String = map["content"] as String
-                    val imgUrl : String? = map["imgUrl"] as String?
+                    url = map["imgUrl"] as String?  // "완료" 버튼 enable 체크를 위함
                     val strRepeatTime : String = map["repeatTime"] as String
                     val strAlarmType : String = map["alarmType"] as String
                     val repeatTime =
@@ -348,6 +355,14 @@ class SetAlarmActivity : AppCompatActivity() {
                     binding.editContent.setText(content)
                     binding.spinnerSelectTime.setSelection(repeatTime)
                     binding.spinnerSelectType.setSelection(alarmType)
+                    if(url != null) {
+                        Glide.with(applicationContext)
+                            .load(url)
+                            .error(R.drawable.ic_launcher_background)                  // 오류 시 이미지
+                            .apply(RequestOptions().centerCrop())
+                            .into(binding.imgView)
+                    }
+                    binding.btnOK.text = "수정 완료"
 
                 } else {
                     Toast.makeText(applicationContext, "다시 시도해주세요.", Toast.LENGTH_SHORT).show()
