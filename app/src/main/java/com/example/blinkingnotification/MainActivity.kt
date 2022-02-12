@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -57,7 +58,6 @@ class MainActivity : AppCompatActivity() {
             swipeHelperCallback.removePreviousClamp(binding.recyclerView)
             false
         }
-
 
         // 파이어베이스 토큰 가져오기 + 알림 가져오기
         FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
