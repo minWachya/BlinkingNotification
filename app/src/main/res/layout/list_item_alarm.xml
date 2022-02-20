@@ -44,10 +44,13 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <ToggleButton
+        <com.suke.widget.SwitchButton
             android:id="@+id/toggle"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
+            android:layout_width="80dp"
+            android:layout_height="40dp"
+            app:sb_checked_color="@color/green"
+            app:sb_uncheck_color="@color/gray"
+            app:sb_button_color="@color/yellow"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 

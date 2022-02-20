@@ -8,7 +8,6 @@ import android.os.SystemClock
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CompoundButton
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -21,6 +20,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.ktx.storage
+import com.suke.widget.SwitchButton
 import kotlinx.android.synthetic.main.list_item_alarm.view.*
 
 data class Alarm(val title: String,
@@ -82,28 +82,36 @@ class AlarmAdapter : RecyclerView.Adapter<AlarmAdapter.ViewHolder>() {
             val intent = Intent(itemView.context, AlarmReceiver::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)  // Activity가 아닌곳에서 startActivity() 사용
             val pendingIntent = PendingIntent.getBroadcast(
-                itemView.context, AlarmReceiver.NOTIFICATION_ID, intent,
-                PendingIntent.FLAG_UPDATE_CURRENT)
-
-            itemView.toggle.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { _, isChecked ->
+                itemView.context, AlarmReceiver.NOTIFICATION_ID, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+            itemView.toggle.setOnCheckedChangeListener(SwitchButton.OnCheckedChangeListener { _, isChecked ->
                 val toastMessage = if (isChecked) {
-                    val repeatInterval: Long = AlarmManager.INTERVAL_FIFTEEN_MINUTES
-                    val triggerTime = (SystemClock.elapsedRealtime()    // 1
-                            + repeatInterval)
-                    // 인자 설정: ELAPSED_REALTIME
-                    // 기기가 부팅된 후 경과한 시간을 기준, 상대적인 시간을 사용하여 알람을 발생
+                    val repeatInterval: Long = getRepeatTime(item.repeatTime)   // 반복 시간 설정
+                    val triggerTime = (SystemClock.elapsedRealtime() + repeatInterval)  // 현재 시간 + 반복시간
+                    // 인자 설정: ELAPSED_REALTIME: 기기가 부팅된 후 경과한 시간을 기준, 상대적인 시간을 사용하여 알람을 발생
                     // 기기가 절전모드에 있을 때는 알람을 발생시키지 않고 해제되면 발생
-                    alarmManager.setInexactRepeating(
-                        AlarmManager.ELAPSED_REALTIME,
-                        triggerTime, repeatInterval,
-                        pendingIntent)
-                    "Onetime Alarm On"
+                    alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME, triggerTime, repeatInterval, pendingIntent)
+                    "Alarm On"
                 } else {
-                    alarmManager.cancel(pendingIntent)    // 알람 퓌소 시 등록한 pendingIntent를 인자로 전달
-                    "Onetime Alarm Off"
+                    alarmManager.cancel(pendingIntent)    // 알람 취소 시 등록한 pendingIntent를 인자로 전달
+                    "Alarm Off"
                 }
                 Toast.makeText(itemView.context, toastMessage, Toast.LENGTH_SHORT).show()
             })
+        }
+    }
+
+    // 반복 시간 반환
+    fun getRepeatTime(str: String): Long {
+        return when(str) {
+            "1분" -> 1000*60
+            "5분" -> 1000*60*5
+            "10분" -> 1000*60*10
+            "20분" -> 1000*60*20
+            "30분" -> 1000*60*30
+            "40분" -> 1000*60*40
+            "50분" -> 1000*60*50
+            "1시간" -> 1000*60*60
+            else -> AlarmManager.INTERVAL_FIFTEEN_MINUTES   // 15분
         }
     }
 
