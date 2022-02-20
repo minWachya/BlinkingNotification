@@ -1,13 +1,19 @@
 package com.example.blinkingnotification.adapter
 
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context.ALARM_SERVICE
 import android.content.Intent
+import android.os.SystemClock
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CompoundButton
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.example.blinkingnotification.AlarmReceiver
 import com.example.blinkingnotification.R
 import com.example.blinkingnotification.SetAlarmActivity
 import com.google.android.gms.tasks.OnCompleteListener
@@ -52,6 +58,7 @@ class AlarmAdapter : RecyclerView.Adapter<AlarmAdapter.ViewHolder>() {
         fun setItem(item: Alarm) {
             itemView.item_tvTitle.text = item.title
             itemView.item_tvContent.text = item.content
+            itemView.item_info.text = "${item.repeatTime}동안 반복 | ${item.alarmType}"
             if(item.imgUrl != null) {
                 itemView.item_imgView.visibility = View.VISIBLE
                 Glide.with(itemView.context)
@@ -69,6 +76,34 @@ class AlarmAdapter : RecyclerView.Adapter<AlarmAdapter.ViewHolder>() {
             itemView.imgbtnDelete.setOnClickListener {
                 removeData(this.layoutPosition, itemView)
             }
+            // 토글 버튼 클릭
+            val alarmManager = itemView.context.applicationContext.getSystemService(ALARM_SERVICE) as AlarmManager
+            // 알람 조건 충족 시 리시버로 전달될 인텐트 설정
+            val intent = Intent(itemView.context, AlarmReceiver::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)  // Activity가 아닌곳에서 startActivity() 사용
+            val pendingIntent = PendingIntent.getBroadcast(
+                itemView.context, AlarmReceiver.NOTIFICATION_ID, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT)
+
+            itemView.toggle.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { _, isChecked ->
+                val toastMessage = if (isChecked) {
+                    val repeatInterval: Long = AlarmManager.INTERVAL_FIFTEEN_MINUTES
+                    val triggerTime = (SystemClock.elapsedRealtime()    // 1
+                            + repeatInterval)
+                    // 인자 설정: ELAPSED_REALTIME
+                    // 기기가 부팅된 후 경과한 시간을 기준, 상대적인 시간을 사용하여 알람을 발생
+                    // 기기가 절전모드에 있을 때는 알람을 발생시키지 않고 해제되면 발생
+                    alarmManager.setInexactRepeating(
+                        AlarmManager.ELAPSED_REALTIME,
+                        triggerTime, repeatInterval,
+                        pendingIntent)
+                    "Onetime Alarm On"
+                } else {
+                    alarmManager.cancel(pendingIntent)    // 알람 퓌소 시 등록한 pendingIntent를 인자로 전달
+                    "Onetime Alarm Off"
+                }
+                Toast.makeText(itemView.context, toastMessage, Toast.LENGTH_SHORT).show()
+            })
         }
     }
 

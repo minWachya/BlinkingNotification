@@ -269,18 +269,18 @@ class SetAlarmActivity : AppCompatActivity() {
             }
 
         // FCM 보내기
-        val bundle = Bundle()
-        bundle.putString("title", alarm.title)
-        bundle.putString("message", alarm.content)
-        if (uri != null) {
-            bundle.putString("imgUrl", alarm.imgUrl)
-            bundle.putString("type", NotificationType.IMAGE.toString())
-            bundle.putString("imgUri", uri.toString())
-        }
-        else bundle.putString("type", NotificationType.NORMAL.toString())
-        val remoteMessage = RemoteMessage(bundle)
-        val fcm = MyFirebaseMessagingService(applicationContext)
-        fcm.onMessageReceived(remoteMessage)
+//        val bundle = Bundle()
+//        bundle.putString("title", alarm.title)
+//        bundle.putString("message", alarm.content)
+//        if (uri != null) {
+//            bundle.putString("imgUrl", alarm.imgUrl)
+//            bundle.putString("type", NotificationType.IMAGE.toString())
+//            bundle.putString("imgUri", uri.toString())
+//        }
+//        else bundle.putString("type", NotificationType.NORMAL.toString())
+//        val remoteMessage = RemoteMessage(bundle)
+//        val fcm = MyFirebaseMessagingService(applicationContext)
+//        fcm.onMessageReceived(remoteMessage)
     }
 
     // "이미지" 선택 시: 이미지 저장 + URL 반환
