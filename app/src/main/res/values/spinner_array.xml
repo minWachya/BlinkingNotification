@@ -2,6 +2,7 @@
 <resources>
     <!--알림 설정 화면: 반복 시간 설정 스피너 배열-->
     <string-array name="select_time_array">
+        <item>30초</item>
         <item>1분</item>
         <item>5분</item>
         <item>10분</item>

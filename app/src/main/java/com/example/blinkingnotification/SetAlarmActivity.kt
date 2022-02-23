@@ -338,14 +338,15 @@ class SetAlarmActivity : AppCompatActivity() {
                     val strAlarmType : String = map["alarmType"] as String
                     val repeatTime =
                         when(strRepeatTime) {
-                            "1분" -> 0
-                            "5분" -> 1
-                            "10분" -> 2
-                            "20분" -> 3
-                            "30분" -> 4
-                            "40분" -> 5
-                            "50분" -> 6
-                            "1시간" -> 7
+                            "30초" -> 0
+                            "1분" -> 1
+                            "5분" -> 2
+                            "10분" -> 3
+                            "20분" -> 4
+                            "30분" -> 5
+                            "40분" -> 6
+                            "50분" -> 7
+                            "1시간" -> 8
                             else -> 0
                         }
                     val alarmType = if(strAlarmType == "기본") 0 else 1
